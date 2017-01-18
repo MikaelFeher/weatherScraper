@@ -2,11 +2,16 @@
 
 	$output = '';
 
-
 	if ($_GET['city']) {
+		// City names with spaces eg. San Francisco can't be used unless the space is replaced with either a '-', version 1 or stripping the space, version 2...
 
-		$input = explode(' ', $_GET['city']);
-		$city = implode('-', $input);
+		// version 1
+		// $input = explode(' ', $_GET['city']);
+		// $city = implode('-', $input);
+
+		// version 2
+		$city = str_replace(' ', '', $_GET['city']);  // replace a space with no-space in the string $_GET['city'].
+
 
 		$forecastPage = file_get_contents('http://www.weather-forecast.com/locations/'.$city.'/forecasts/latest');
 
@@ -14,6 +19,7 @@
 
 		$secondDelimiter = '</span></span></span></p><div class="forecast-cont"><div class="units-cont"><a class="units metric active">&deg;C</a><a class="units imperial">&deg;F</a></div>';
 
+		// To only get the information needed, everything before $firstDelimiter(included) and after $secondDelimiter(included) has to be stripped away.
 		$strOne = explode($firstDelimiter, $forecastPage);
 
 		$strTwo = explode($secondDelimiter, $strOne[1]);
@@ -24,9 +30,7 @@
 		} else {
 			$output = '<div class="alert alert-danger"><strong>Oops, something went wrong :(</strong><br>If your spelling is correct then the city isn\'t in the system. </div>';
 		}
-
 	}
-
 ?>
 
 
@@ -69,7 +73,7 @@
 					<p class="lead pb-3">Enter the name of a city. <br> <span><small>(English names only...)</small></span></p>
 
 					<form>
-						<input type="text" class="form-control form-control-lg col-xs-6 offset-xs-3 my-3" name="city" placeholder="Eg. London, Malmo" value="<?php echo $city; ?>">
+						<input type="text" class="form-control form-control-lg col-xs-6 offset-xs-3 my-3" name="city" placeholder="Eg. London, Malmo" value="<?php echo $_GET['city']; ?>">
 
 						<button type="submit" class="btn btn-primary btn-lg mt-4">Submit</button>
 
